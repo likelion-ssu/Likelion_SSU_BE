@@ -1,0 +1,86 @@
+{% extends 'header.html' %}
+{% block content %}
+
+  <div id="container" class="article">
+    <input type="hidden" id="isUser" value="1">
+    <input type="hidden" id="boardId" value="370455">
+    <aside class="none">
+      <div class="title">
+        <a class="hamburger"></a>
+        <h1>
+          <a href="/370455">자유게시판</a>
+        </h1>
+      </div>
+    </aside>
+    <div class="wrap title">
+      <h1>
+        <a href="/370455">자유게시판</a>
+      </h1>
+      <hr>
+    </div>
+    <div class="wrap articles">
+      <form action="{% url 'create' %}" class="write" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <p><input name="title" autocomplete="off" placeholder="글 제목" class="title"></p>
+        <p>
+          <textarea name="text" placeholder="글을 작성해주세요" class="smallplaceholder"></textarea>
+        </p>
+
+        <ol class="thumbnails">
+          <li class="new"></li>
+        </ol>
+        <div class="clearBothOnly"></div>
+        <ul class="option">
+          <li title="첨부" class="attach">
+            <input type="file" class="file" name="file" multiple="multiple">
+          </li>
+          <li title="완료" class="submit">
+            <input type="submit">
+          </li>
+        </ul>
+        <div class="clearBothOnly"></div>
+      </form>
+      {% for post in posts %}
+        <article>
+          <a class="article" href="{% url 'detail' post.id %}">
+            {{ post.id }}
+            <h2 class="medium">{{ post.title }}</h2>
+            <p class="small">{{ post.content }}</p>
+
+            {% if post.created_string == False %}
+              <time class="small">{{ post.date | date:'m월 d일' }}</time>
+            {% else %}
+              <time class="small">{{ post.created_string }}</time>
+            {% endif %}
+
+            <h3 class="small">{{ post.user.nickname }}</h3>
+
+            <ul class="status">
+              <li title="공감" class="vote">0</li>
+              <li title="댓글" class="comment">{{ post.comment_set.all.count }}</li>
+            </ul>
+            <hr>
+            <input type="hidden" name="251688301_comment_anonym" value="0">
+          </a>
+          <div class="comments"></div>
+        </article>
+      {% endfor %}
+
+      <a href="?page=1">첫 페이지</a>
+      <a href="?page={{posts.paginator.num_pages}}">마지막 페이지</a>
+      <br>
+      {% if posts.has_previous %}
+        <a href="?page={{posts.previous_page_number}}">이전 페이지</a>
+      {% endif %}
+
+      <span>{{posts.number}}</span>
+      <span>/</span>
+      <span>{{posts.paginator.num_pages}}</span>
+
+      {% if posts.has_next %}
+        <a href="?page={{posts.next_page_number}}">다음페이지</a>
+      {% endif %}
+
+      <hr>
+    </div>
+  {% endblock %}
